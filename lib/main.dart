@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:screenshot/screenshot.dart';
 
 void main() {
   runApp(const WeddingInvitationApp());
@@ -13,51 +11,86 @@ class WeddingInvitationApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: InvitationScreen(),
+      home: const InvitationScreen(),
     );
   }
 }
 
-class InvitationScreen extends StatefulWidget {
+// Main Invitation Screen with Drag-and-Drop Interaction
+class InvitationScreen extends StatelessWidget {
   const InvitationScreen({super.key});
 
-  @override
-  InvitationScreenState createState() => InvitationScreenState();
-}
-
-class InvitationScreenState extends State<InvitationScreen> {
-  void onDragCompleted(BuildContext context) {
+  void _onDragCompleted(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const InvitationDetailsPage()),
+      MaterialPageRoute(
+        builder: (context) => const InvitationDetailsPage(),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double imageSize = screenWidth * 0.3;
+    double imageSize = 120;
 
     return Scaffold(
-      backgroundColor: Colors.pink[50],
-      body: Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      backgroundColor: Colors.white,
+      body: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            PersonImageWidget(
-              imagePath: 'assets/images/man.jpg',
-              label: 'Man',
-              imageSize: imageSize,
-              isDraggable: true,
-              onDragCompleted: () => onDragCompleted(context),
+            const Spacer(flex: 1),
+            const Text(
+              "Celebrate Love",
+              style: TextStyle(
+                fontSize: 36,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF8B5E3C),
+                fontFamily: 'Serif',
+              ),
+              textAlign: TextAlign.center,
             ),
-            PersonImageWidget(
-              imagePath: 'assets/images/woman.jpg',
-              label: 'Woman',
-              imageSize: imageSize,
-              isDraggable: false,
-              onDragCompleted: () => onDragCompleted(context),
+            const SizedBox(height: 16),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.0),
+              child: Text(
+                "Drag the groom to his bride to see the invitation!",
+                style: TextStyle(fontSize: 18, color: Colors.black54),
+                textAlign: TextAlign.center,
+              ),
             ),
+            const SizedBox(height: 40),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                PersonImageWidget(
+                  imagePath: 'assets/images/man.jpg',
+                  label: 'Groom',
+                  imageSize: imageSize,
+                  isDraggable: true,
+                  onDragCompleted: () => _onDragCompleted(context),
+                ),
+                const SizedBox(width: 20),
+                PersonImageWidget(
+                  imagePath: 'assets/images/woman.jpg',
+                  label: 'Bride',
+                  imageSize: imageSize,
+                  isDraggable: false,
+                  onDragCompleted: () => _onDragCompleted(context),
+                ),
+              ],
+            ),
+            const Spacer(flex: 2),
+            Text(
+              "A beautiful union awaits...",
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.brown[300],
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -65,6 +98,7 @@ class InvitationScreenState extends State<InvitationScreen> {
   }
 }
 
+// Reusable Draggable Image Widget
 class PersonImageWidget extends StatelessWidget {
   final String imagePath;
   final String label;
@@ -88,7 +122,20 @@ class PersonImageWidget extends StatelessWidget {
         if (isDraggable)
           Draggable<int>(
             data: 1,
-            feedback: Image.asset(imagePath, width: imageSize),
+            feedback: Material(
+              color: Colors.transparent,
+              child: Column(
+                children: [
+                  Image.asset(imagePath, width: imageSize),
+                  const SizedBox(height: 8),
+                  Text(
+                    label,
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            ),
             childWhenDragging: Opacity(
               opacity: 0.5,
               child: Image.asset(imagePath, width: imageSize),
@@ -101,7 +148,7 @@ class PersonImageWidget extends StatelessWidget {
               return Image.asset(
                 imagePath,
                 width: imageSize,
-                color: candidateData.isNotEmpty ? Colors.pink[300] : null,
+                color: candidateData.isNotEmpty ? Colors.brown[200] : null,
               );
             },
             onWillAcceptWithDetails: (details) => true,
@@ -117,66 +164,89 @@ class PersonImageWidget extends StatelessWidget {
   }
 }
 
+// Elegant Invitation Page
 class InvitationDetailsPage extends StatelessWidget {
   const InvitationDetailsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final ScreenshotController screenshotController = ScreenshotController();
-
-    return Screenshot(
-      controller: screenshotController,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text("Wedding Invitation"),
-          backgroundColor: Colors.pink[300],
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'Wedding Invitation',
-                style: TextStyle(fontSize: 30, color: Colors.pink[700]),
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'You are invited to join us on our special day!',
-                style: TextStyle(fontSize: 24),
+                "You’re Invited",
+                style: TextStyle(
+                  fontSize: 36,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF8B5E3C),
+                  fontFamily: 'Serif',
+                ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
               const Text(
-                'Date: Saturday, April 6, 2024',
+                "We warmly invite you to celebrate the wedding of",
+                style: TextStyle(fontSize: 18, color: Colors.black54),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                "Emma & Liam",
+                style: TextStyle(
+                  fontSize: 32,
+                  color: Color(0xFF8B5E3C),
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Serif',
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                "Saturday, April 6, 2024",
                 style: TextStyle(fontSize: 18),
               ),
               const Text(
-                'Location: Lovely Wedding Venue, City',
+                "Lovely Wedding Venue, City",
                 style: TextStyle(fontSize: 18),
               ),
-              const Spacer(),
+              const SizedBox(height: 30),
+
+              const SizedBox(height: 20),
+              const Text(
+                "Join us for a beautiful celebration of love, laughter, "
+                    "and happily ever after.",
+                style: TextStyle(fontSize: 16, color: Colors.black54),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 30),
               ElevatedButton(
-                onPressed: () async {
-                  await _downloadInvitation(screenshotController);
+                onPressed: () {
+                  Navigator.pop(context);
                 },
-                child: const Text("Download Invitation Image"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF8B5E3C),
+                  padding:
+                  const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: const Text(
+                  "Back to Main",
+                  style: TextStyle(fontSize: 18
+                  ,
+                  color: Colors.white),
+                ),
               ),
             ],
           ),
         ),
       ),
-    );
-  }
-
-  Future<void> _downloadInvitation(
-      ScreenshotController screenshotController) async {
-    final directory = await getApplicationDocumentsDirectory();
-
-    // Capture and save the screenshot
-    await screenshotController.captureAndSave(
-      directory.path,
-      fileName: "invitation.png",
     );
   }
 }
