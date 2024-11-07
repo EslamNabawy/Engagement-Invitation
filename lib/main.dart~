@@ -1,0 +1,182 @@
+import 'dart:typed_data';
+import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:screenshot/screenshot.dart';
+
+void main() {
+  runApp(const WeddingInvitationApp());
+}
+
+class WeddingInvitationApp extends StatelessWidget {
+  const WeddingInvitationApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: InvitationScreen(),
+    );
+  }
+}
+
+class InvitationScreen extends StatefulWidget {
+  const InvitationScreen({super.key});
+
+  @override
+  InvitationScreenState createState() => InvitationScreenState();
+}
+
+class InvitationScreenState extends State<InvitationScreen> {
+  void onDragCompleted(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const InvitationDetailsPage()),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double imageSize = screenWidth * 0.3;
+
+    return Scaffold(
+      backgroundColor: Colors.pink[50],
+      body: Center(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            PersonImageWidget(
+              imagePath: 'assets/images/man.jpg',
+              label: 'Man',
+              imageSize: imageSize,
+              isDraggable: true,
+              onDragCompleted: () => onDragCompleted(context),
+            ),
+            PersonImageWidget(
+              imagePath: 'assets/images/woman.jpg',
+              label: 'Woman',
+              imageSize: imageSize,
+              isDraggable: false,
+              onDragCompleted: () => onDragCompleted(context),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class PersonImageWidget extends StatelessWidget {
+  final String imagePath;
+  final String label;
+  final double imageSize;
+  final bool isDraggable;
+  final VoidCallback onDragCompleted;
+
+  const PersonImageWidget({
+    super.key,
+    required this.imagePath,
+    required this.label,
+    required this.imageSize,
+    required this.isDraggable,
+    required this.onDragCompleted,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        if (isDraggable)
+          Draggable<int>(
+            data: 1,
+            feedback: Image.asset(imagePath, width: imageSize),
+            childWhenDragging: Opacity(
+              opacity: 0.5,
+              child: Image.asset(imagePath, width: imageSize),
+            ),
+            child: Image.asset(imagePath, width: imageSize),
+          )
+        else
+          DragTarget<int>(
+            builder: (context, candidateData, rejectedData) {
+              return Image.asset(
+                imagePath,
+                width: imageSize,
+                color: candidateData.isNotEmpty ? Colors.pink[300] : null,
+              );
+            },
+            onWillAcceptWithDetails: (details) => true,
+            onAcceptWithDetails: (details) => onDragCompleted(),
+          ),
+        const SizedBox(height: 8),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+      ],
+    );
+  }
+}
+
+class InvitationDetailsPage extends StatelessWidget {
+  const InvitationDetailsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final ScreenshotController screenshotController = ScreenshotController();
+
+    return Screenshot(
+      controller: screenshotController,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Wedding Invitation"),
+          backgroundColor: Colors.pink[300],
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Wedding Invitation',
+                style: TextStyle(fontSize: 30, color: Colors.pink[700]),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'You are invited to join us on our special day!',
+                style: TextStyle(fontSize: 24),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Date: Saturday, April 6, 2024',
+                style: TextStyle(fontSize: 18),
+              ),
+              const Text(
+                'Location: Lovely Wedding Venue, City',
+                style: TextStyle(fontSize: 18),
+              ),
+              const Spacer(),
+              ElevatedButton(
+                onPressed: () async {
+                  await _downloadInvitation(screenshotController);
+                },
+                child: const Text("Download Invitation Image"),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _downloadInvitation(ScreenshotController screenshotController) async {
+    final directory = await getApplicationDocumentsDirectory();
+
+    // Capture and save the screenshot
+    await screenshotController.captureAndSave(
+      directory.path,
+      fileName: "invitation.png",
+    );
+  }
+}
