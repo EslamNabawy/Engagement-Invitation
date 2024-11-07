@@ -215,14 +215,10 @@ class InvitationDetailsPage extends StatelessWidget {
                 style: TextStyle(fontSize: 18),
               ),
               const SizedBox(height: 30),
-              Divider(
-                color: Colors.brown[200],
-                thickness: 1.5,
-              ),
               const SizedBox(height: 20),
               const Text(
                 "Join us for a beautiful celebration of love, laughter, "
-                    "and happily ever after.",
+                "and happily ever after.",
                 style: TextStyle(fontSize: 16, color: Colors.black54),
                 textAlign: TextAlign.center,
               ),
@@ -234,14 +230,14 @@ class InvitationDetailsPage extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFF8B5E3C),
                   padding:
-                  const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+                      const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
                 child: const Text(
                   "Back to Main",
-                  style: TextStyle(fontSize: 18),
+                  style: TextStyle(fontSize: 18, color: Colors.white),
                 ),
               ),
             ],
